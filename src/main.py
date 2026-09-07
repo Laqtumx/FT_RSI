@@ -4,7 +4,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 # Change this to any NSE stock
-ticker = "RELIANCE.NS"
+ticker = "TCS.NS"
 
 # Download data
 df = yf.download(ticker, period="6mo", interval="1d")
