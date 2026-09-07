@@ -73,3 +73,54 @@ fig.update_layout(
 )
 
 fig.show()
+# ==========================
+# FT_RSI BACKTEST ENGINE
+# ==========================
+
+position = None
+entry_price = 0
+entry_date = None
+trades = []
+
+for i in range(len(df)):
+    price = df["Close"].iloc[i]
+    date = df.index[i]
+
+    if buy.iloc[i] and position is None:
+        position = "LONG"
+        entry_price = price
+        entry_date = date
+
+    elif sell.iloc[i] and position == "LONG":
+        profit = ((price - entry_price) / entry_price) * 100
+
+        trades.append({
+            "Buy Date": entry_date.date(),
+            "Sell Date": date.date(),
+            "Buy": round(entry_price, 2),
+            "Sell": round(price, 2),
+            "Return %": round(profit, 2)
+        })
+
+        position = None
+
+print("\n========== BACKTEST ==========\n")
+
+if len(trades) == 0:
+    print("No completed trades found.")
+else:
+    import pandas as pd
+
+    trades_df = pd.DataFrame(trades)
+
+    wins = (trades_df["Return %"] > 0).sum()
+    total = len(trades_df)
+
+    print(trades_df)
+
+    print("\n----------------------------")
+    print(f"Trades       : {total}")
+    print(f"Win Rate     : {wins/total*100:.1f}%")
+    print(f"Total Return : {trades_df['Return %'].sum():.2f}%")
+    print(f"Best Trade   : {trades_df['Return %'].max():.2f}%")
+    print(f"Worst Trade  : {trades_df['Return %'].min():.2f}%")
